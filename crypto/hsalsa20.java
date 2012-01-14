@@ -4,20 +4,20 @@ public class hsalsa20
 {
 	static final int ROUNDS = 20;
 
-	static int rotate(int u, int c)
+	static long rotate(long u, long c)
 	{
 		return (u << c) | (u >> (32 - c));
 	}
 
-	static int load_littleendian(byte[] x, int offset)
+	static long load_littleendian(byte[] x, int offset)
 	{
-		return (int)(x[offset]) |
-				(((int)(x[offset + 1])) << 8) |
-				(((int)(x[offset + 2])) << 16) |
-				(((int)(x[offset + 3])) << 24);
+		return (long)(x[offset]) |
+				(((long)(x[offset + 1])) << 8) |
+				(((long)(x[offset + 2])) << 16) |
+				(((long)(x[offset + 3])) << 24);
 	}
 
-	static void store_littleendian(byte[] x, int offset, int u)
+	static void store_littleendian(byte[] x, int offset, long u)
 	{
 		x[offset] = (byte) u; u >>= 8;
 				x[offset + 1] = (byte) u; u >>= 8;
@@ -27,8 +27,8 @@ public class hsalsa20
 
 	public static int crypto_core(byte[] outv, byte[] inv, byte[] k, byte[] c)
 	{
-		int x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15;
-		int j0, j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12, j13, j14, j15;
+		long x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15;
+		long j0, j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12, j13, j14, j15;
 		int i;
 
 		j0 = x0 = load_littleendian(c, 0);
