@@ -151,7 +151,7 @@ public class salsa20
 			
 			salsa20.crypto_core(c, invp, k, sigmap);
 
-			int u = 1;
+			long u = 1;
 			
 			for (int i = 8; i < 16; ++i)
 			{
@@ -207,7 +207,7 @@ public class salsa20
 			for (int i = 0; i < 64; ++i)
 				c[coffset + i] = (byte)(m[moffset + i] ^ block[i]);
 
-			int u = 1;
+			long u = 1;
 			
 			for (int i = 8; i < 16; ++i)
 			{

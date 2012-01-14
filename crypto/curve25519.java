@@ -6,7 +6,7 @@ public class curve25519
 	final int CRYPTO_SCALARBYTES = 32;
 	
 	static byte[] basev = { 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	static int[] minusp = { 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128 };
+	static long[] minusp = { 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128 };
 
 	public static int crypto_scalarmult_base(byte[] q, byte[] n)
 	{
@@ -14,9 +14,9 @@ public class curve25519
 		return crypto_scalarmult(q, n, basevp);
 	}
 	
-	static void add(int[] outv, int outvoffset, int[] a, int aoffset, int[] b, int boffset)
+	static void add(long[] outv, int outvoffset, long[] a, int aoffset, long[] b, int boffset)
 	{
-		int u = 0;
+		long u = 0;
 		
 		for (int j = 0; j < 31; ++j)
 		{
@@ -28,9 +28,9 @@ public class curve25519
 		outv[outvoffset + 31] = u;
 	}
 
-	static void sub(int[] outv, int outvoffset, int[] a, int aoffset, int[] b, int boffset)
+	static void sub(long[] outv, int outvoffset, long[] a, int aoffset, long[] b, int boffset)
 	{
-		int u = 218;
+		long u = 218;
 		
 		for (int j = 0; j < 31; ++j)
 		{
@@ -43,9 +43,9 @@ public class curve25519
 		outv[outvoffset + 31] = u;
 	}
 
-	static void squeeze(int[] a, int aoffset)
+	static void squeeze(long[] a, int aoffset)
 	{
-		int u = 0;
+		long u = 0;
 		
 		for (int j = 0; j < 31; ++j)
 		{
@@ -69,30 +69,30 @@ public class curve25519
 		a[aoffset + 31] = u;
 	}
 
-	static void freeze(int[] a, int aoffset)
+	static void freeze(long[] a, int aoffset)
 	{
-		int[] aorig = new int[32];
+		long[] aorig = new long[32];
 		
 		for (int j = 0; j < 32; ++j)
 			aorig[j] = a[aoffset + j];
 		
-		int[] minuspp = minusp;
+		long[] minuspp = minusp;
 		
 		add(a, 0, a, 0, minuspp, 0);
 		
-		int negative = (int)(-((a[aoffset + 31] >> 7) & 1));
+		long negative = (long)(-((a[aoffset + 31] >> 7) & 1));
 		
 		for (int j = 0; j < 32; ++j)
 			a[aoffset + j] ^= negative & (aorig[j] ^ a[aoffset + j]);
 	}
 
-	static void mult(int[] outv, int outvoffset, int[] a, int aoffset, int[] b, int boffset)
+	static void mult(long[] outv, int outvoffset, long[] a, int aoffset, long[] b, int boffset)
 	{
 		int j;
 		
 		for (int i = 0; i < 32; ++i)
 		{
-			int u = 0;
+			long u = 0;
 			
 			for (j = 0; j <= i; ++j)
 				u += a[aoffset + j] * b[boffset + i - j];
@@ -106,10 +106,10 @@ public class curve25519
 		squeeze(outv, 0);
 	}
 
-	static void mult121665(int[] outv, int[] a)
+	static void mult121665(long[] outv, long[] a)
 	{
 		int j;
-		int u = 0;
+		long u = 0;
 		
 		for (j = 0; j < 31; ++j)
 		{
@@ -133,12 +133,13 @@ public class curve25519
 		outv[j] = u;
 	}
 	
-	static void square(int[] outv, int outvoffset, int[] a, int aoffset)
+	static void square(long[] outv, int outvoffset, long[] a, int aoffset)
 	{
 		int j;
+		
 		for (int i = 0; i < 32; ++i)
 		{
-			int u = 0;
+			long u = 0;
 			
 			for (j = 0; j < i - j; ++j)
 				u += a[aoffset + j] * a[aoffset + i - j];
@@ -160,35 +161,35 @@ public class curve25519
 		squeeze(outv, 0);
 	}
 
-	static void select(int[] p, int[] q, int[] r, int[] s, int b)
+	static void select(long[] p, long[] q, long[] r, long[] s, long b)
 	{
-		int bminus1 = b - 1;
+		long bminus1 = b - 1;
 		
 		for (int j = 0; j < 64; ++j)
 		{
-			int t = bminus1 & (r[j] ^ s[j]);
+			long t = bminus1 & (r[j] ^ s[j]);
 			p[j] = s[j] ^ t;
 			q[j] = r[j] ^ t;
 		}
 	}
 
-	static void mainloop(int[] work, byte[] e)
+	static void mainloop(long[] work, byte[] e)
 	{
-		int[] xzm1 = new int[64];
-		int[] xzm = new int[64];
-		int[] xzmb = new int[64];
-		int[] xzm1b = new int[64];
-		int[] xznb = new int[64];
-		int[] xzn1b = new int[64];
-		int[] a0 = new int[64];
-		int[] a1 = new int[64];
-		int[] b0 = new int[64];
-		int[] b1 = new int[64];
-		int[] c1 = new int[64];
-		int[] r = new int[32];
-		int[] s = new int[32];
-		int[] t = new int[32];
-		int[] u = new int[32];
+		long[] xzm1 = new long[64];
+		long[] xzm = new long[64];
+		long[] xzmb = new long[64];
+		long[] xzm1b = new long[64];
+		long[] xznb = new long[64];
+		long[] xzn1b = new long[64];
+		long[] a0 = new long[64];
+		long[] a1 = new long[64];
+		long[] b0 = new long[64];
+		long[] b1 = new long[64];
+		long[] c1 = new long[64];
+		long[] r = new long[32];
+		long[] s = new long[32];
+		long[] t = new long[32];
+		long[] u = new long[32];
 
 		for (int j = 0; j < 32; ++j)
 			xzm1[j] = work[j];
@@ -203,14 +204,14 @@ public class curve25519
 		for (int j = 1; j < 64; ++j)
 			xzm[j] = 0;
 
-		int[] xzmbp = xzmb, a0p = a0, xzm1bp = xzm1b;
-		int[] a1p = a1, b0p = b0, b1p = b1, c1p = c1;
-		int[] xznbp = xznb, up = u, xzn1bp = xzn1b;
-		int[] workp = work, sp = s, rp = r;
+		long[] xzmbp = xzmb, a0p = a0, xzm1bp = xzm1b;
+		long[] a1p = a1, b0p = b0, b1p = b1, c1p = c1;
+		long[] xznbp = xznb, up = u, xzn1bp = xzn1b;
+		long[] workp = work, sp = s, rp = r;
 
 		for (int pos = 254; pos >= 0; --pos)
 		{
-			int b = (int)(e[pos / 8] >> (pos & 7));
+			long b = (int)(e[pos / 8] >> (pos & 7));
 			b &= 1;
 			select(xzmb, xzm1b, xzm, xzm1, b);
 			add(a0, 	0,	xzmb, 	0,	xzmbp,	32);
@@ -238,21 +239,21 @@ public class curve25519
 			work[j] = xzm[j];
 	}
 
-	static void recip(int[] outv, int outvoffset, int[] z, int zoffset)
+	static void recip(long[] outv, int outvoffset, long[] z, int zoffset)
 	{
-		int[] z2 = new int[32];
-		int[] z9 = new int[32];
-		int[] z11 = new int[32];
-		int[] z2_5_0 = new int[32];
-		int[] z2_10_0 = new int[32];
-		int[] z2_20_0 = new int[32];
-		int[] z2_50_0 = new int[32];
-		int[] z2_100_0 = new int[32];
-		int[] t0 = new int[32];
-		int[] t1 = new int[32];
+		long[] z2 = new long[32];
+		long[] z9 = new long[32];
+		long[] z11 = new long[32];
+		long[] z2_5_0 = new long[32];
+		long[] z2_10_0 = new long[32];
+		long[] z2_20_0 = new long[32];
+		long[] z2_50_0 = new long[32];
+		long[] z2_100_0 = new long[32];
+		long[] t0 = new long[32];
+		long[] t1 = new long[32];
 
 		/* 2 */
-		int[] z2p = z2;
+		long[] z2p = z2;
 		square(z2p, 0, z, zoffset);
 		
 		/* 4 */
@@ -262,7 +263,7 @@ public class curve25519
 		square(t0, 0, t1, 0);
 		
 		/* 9 */
-		int[] z9p = z9, t0p = t0;
+		long[] z9p = z9, t0p = t0;
 		mult(z9p, 0, t0p, 0, z, zoffset);
 		
 		/* 11 */
@@ -404,13 +405,13 @@ public class curve25519
 		square(t1, 0, t0, 0);
 		
 		/* 2^255 - 21 */
-		int[] t1p = t1, z11p = z11;
+		long[] t1p = t1, z11p = z11;
 		mult(outv, outvoffset, t1p, 0, z11p, 0);
 	}
 
 	public static int crypto_scalarmult(byte[] q, byte[] n, byte[] p)
 	{
-		int[] work = new int[96];
+		long[] work = new long[96];
 		byte[] e = new byte[32];
 		
 		for (int i = 0; i < 32; ++i)
@@ -425,13 +426,13 @@ public class curve25519
 		
 		mainloop(work, e);
 		
-		int[] workp = work;
+		long[] workp = work;
 		recip(workp, 32, workp, 32);
 		mult(workp, 64, workp, 0, workp, 32);
 		freeze(workp, 64);
 		
 		for (int i = 0; i < 32; ++i)
-			q[i] = (byte)work[64 + i];
+			q[i] = (byte) work[64 + i];
 		
 		return 0;
 	}

@@ -5,7 +5,7 @@ public class poly1305
 	final int CRYPTO_BYTES = 16;
 	final int CRYPTO_KEYBYTES = 32;
 	
-	static final int[] minusp = {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252};
+	static final long[] minusp = {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252};
 
 	public static int crypto_onetimeauth_verify(byte[] h, int hoffset, byte[] inv, int invoffset, long inlen, byte[] k)
 	{
@@ -16,7 +16,7 @@ public class poly1305
 		return verify_16.crypto_verify(h, correctp);
 	}
 
-	static void add(int[] h, int[] c)
+	static void add(long[] h, long[] c)
 	{
 		int j;
 		int u = 0;
@@ -29,7 +29,7 @@ public class poly1305
 		}
 	}
 
-	static void squeeze(int[] h)
+	static void squeeze(long[] h)
 	{
 		int u = 0;
 		
@@ -55,9 +55,9 @@ public class poly1305
 		h[16] = u;
 	}
 
-	static void freeze(int[] h)
+	static void freeze(long[] h)
 	{
-		int[] horig = new int[17];
+		long[] horig = new long[17];
 		
 		for (int j = 0; j < 17; ++j)
 			horig[j] = h[j];
@@ -70,9 +70,9 @@ public class poly1305
 			h[j] ^= negative & (horig[j] ^ h[j]);
 	}
 
-	static void mulmod(int[] h, int[] r)
+	static void mulmod(long[] h, long[] r)
 	{
-		int[] hr = new int[17];
+		long[] hr = new long[17];
 		
 		for (int i = 0; i < 17; ++i)
 		{
@@ -96,9 +96,9 @@ public class poly1305
 	public static int crypto_onetimeauth(byte[] outv, int outvoffset, byte[] inv, int invoffset, long inlen, byte[] k)
 	{
 		int j;
-		int[] r = new int[17];
-		int[] h = new int[17];
-		int[] c = new int[17];
+		long[] r = new long[17];
+		long[] h = new long[17];
+		long[] c = new long[17];
 
 		r[0] = k[0];
 		r[1] = k[1];
