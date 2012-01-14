@@ -21,7 +21,7 @@ public class curve25519
 		for (int j = 0; j < 31; ++j)
 		{
 			u += a[aoffset + j] + b[boffset + j];
-			outv[outvoffset + j] = u & 255; u >>= 8;
+			outv[outvoffset + j] = u & 255; u = (u & 0xFFFFFFFF) >> 8;
 		}
 		
 		u += a[aoffset + 31] + b[boffset + 31];
@@ -36,7 +36,7 @@ public class curve25519
 		{
 			u += a[aoffset + j] + 65280 - b[boffset + j];
 			outv[outvoffset + j] = u & 255;
-			u >>= 8;
+			u = (u & 0xFFFFFFFF) >> 8;
 		}
 		
 		u += a[aoffset + 31] - b[boffset + 31];
@@ -51,7 +51,7 @@ public class curve25519
 		{
 			u += a[aoffset + j];
 			a[aoffset + j] = u & 255;
-			u >>= 8;
+			u = (u & 0xFFFFFFFF) >> 8;
 		}
 		
 		u += a[aoffset + 31];
@@ -62,7 +62,7 @@ public class curve25519
 		{
 			u += a[aoffset + j];
 			a[aoffset + j] = u & 255;
-			u >>= 8; 
+			u = (u & 0xFFFFFFFF) >> 8;
 		}
 		
 		u += a[aoffset + 31];
@@ -80,7 +80,8 @@ public class curve25519
 		
 		add(a, 0, a, 0, minuspp, 0);
 		
-		long negative = (long)(-((a[aoffset + 31] >> 7) & 1));
+		long negative = (long) (-((a[aoffset + 31] >> 7) & 1));
+		negative &= 0xFFFFFFFF;
 		
 		for (int j = 0; j < 32; ++j)
 			a[aoffset + j] ^= negative & (aorig[j] ^ a[aoffset + j]);
@@ -100,7 +101,7 @@ public class curve25519
 			for (j = i + 1; j < 32; ++j)
 				u += 38 * a[aoffset + j] * b[boffset + i + 32 - j];
 			
-			outv[outvoffset + i] = u;
+			outv[outvoffset + i] = u & 0xFFFFFFFF;
 		}
 		
 		squeeze(outv, 0);
@@ -115,22 +116,22 @@ public class curve25519
 		{
 			u += 121665 * a[j];
 			outv[j] = u & 255;
-			u >>= 8;
+			u = (u & 0xFFFFFFFF) >> 8;
 		}
 		
 		u += 121665 * a[31];
 		outv[31] = u & 127;
-		u = 19 * (u >> 7);
+		u = 19 * ((u & 0xFFFFFFFF) >> 7);
 		
 		for (j = 0; j < 31; ++j)
 		{
 			u += outv[j];
 			outv[j] = u & 255;
-			u >>= 8;
+			u = (u & 0xFFFFFFFF) >> 8;
 		}
 		
 		u += outv[j];
-		outv[j] = u;
+		outv[j] = u & 0xFFFFFFFF;
 	}
 	
 	static void square(long[] outv, int outvoffset, long[] a, int aoffset)
@@ -155,7 +156,7 @@ public class curve25519
 				u += 38 * a[aoffset + i / 2 + 16] * a[aoffset + i / 2 + 16];
 			}
 			
-			outv[outvoffset + i] = u;
+			outv[outvoffset + i] = u & 0xFFFFFFFF;
 		}
 		
 		squeeze(outv, 0);
