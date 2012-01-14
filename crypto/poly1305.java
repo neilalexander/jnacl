@@ -64,7 +64,7 @@ public class poly1305
 		
 		add(h, minusp);
 		
-		int negative = (int)(-(h[16] >> 7));
+		long negative = (long)(-(h[16] >> 7));
 		
 		for (int j = 0; j < 17; ++j)
 			h[j] ^= negative & (horig[j] ^ h[j]);
@@ -76,7 +76,7 @@ public class poly1305
 		
 		for (int i = 0; i < 17; ++i)
 		{
-			int u = 0;
+			long u = 0;
 			
 			for (int j = 0; j <= i; ++j) 
 				u += h[j] * r[i - j];
@@ -103,19 +103,19 @@ public class poly1305
 		r[0] = k[0];
 		r[1] = k[1];
 		r[2] = k[2];
-		r[3] = (int)(k[3] & 15);
-		r[4] = (int)(k[4] & 252);
+		r[3] = (long)(k[3] & 15);
+		r[4] = (long)(k[4] & 252);
 		r[5] = k[5];
 		r[6] = k[6];
-		r[7] = (int)(k[7] & 15);
-		r[8] = (int)(k[8] & 252);
+		r[7] = (long)(k[7] & 15);
+		r[8] = (long)(k[8] & 252);
 		r[9] = k[9];
 		r[10] = k[10];
-		r[11] = (int)(k[11] & 15);
-		r[12] = (int)(k[12] & 252);
+		r[11] = (long)(k[11] & 15);
+		r[12] = (long)(k[12] & 252);
 		r[13] = k[13];
 		r[14] = k[14];
-		r[15] = (int)(k[15] & 15);
+		r[15] = (long)(k[15] & 15);
 		r[16] = 0;
 
 		for (j = 0; j < 17; ++j)

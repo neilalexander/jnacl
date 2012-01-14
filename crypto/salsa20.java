@@ -155,7 +155,7 @@ public class salsa20
 			
 			for (int i = 8; i < 16; ++i)
 			{
-				u += (int) inv[i];
+				u += (long) inv[i];
 				inv[i] = (byte) u;
 				u >>= 8;
 			}
@@ -211,7 +211,7 @@ public class salsa20
 			
 			for (int i = 8; i < 16; ++i)
 			{
-				u += (int) inv[i];
+				u += (long) inv[i];
 				inv[i] = (byte) u;
 				u >>= 8;
 			}

@@ -211,7 +211,7 @@ public class curve25519
 
 		for (int pos = 254; pos >= 0; --pos)
 		{
-			long b = (int)(e[pos / 8] >> (pos & 7));
+			long b = (long)(e[pos / 8] >> (pos & 7));
 			b &= 1;
 			select(xzmb, xzm1b, xzm, xzm1, b);
 			add(a0, 	0,	xzmb, 	0,	xzmbp,	32);
