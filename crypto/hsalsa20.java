@@ -19,9 +19,9 @@ public class hsalsa20
 
 	static void store_littleendian(byte[] x, int offset, long u)
 	{
-		x[offset] = (byte) u; u >>= 8;
-				x[offset + 1] = (byte) u; u >>= 8;
-				x[offset + 2] = (byte) u; u >>= 8;
+		x[offset] = (byte) u; u >>>= 8;
+				x[offset + 1] = (byte) u; u >>>= 8;
+				x[offset + 2] = (byte) u; u >>>= 8;
 				x[offset + 3] = (byte) u;
 	}
 
