@@ -11,10 +11,10 @@ public class hsalsa20
 
 	static int load_littleendian(byte[] x, int offset)
 	{
-		return (int)(x[offset]) |
-				(((int)(x[offset + 1])) << 8) |
-				(((int)(x[offset + 2])) << 16) |
-				(((int)(x[offset + 3])) << 24);
+		return (int)(x[offset]&0xff) |
+				(((int)(x[offset + 1]&0xff)) << 8) |
+				(((int)(x[offset + 2]&0xff)) << 16) |
+				(((int)(x[offset + 3]&0xff)) << 24);
 	}
 
 	static void store_littleendian(byte[] x, int offset, int u)
