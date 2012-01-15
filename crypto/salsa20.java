@@ -34,8 +34,8 @@ public class salsa20
 
 	public static int crypto_core(byte[] outv, byte[] inv, byte[] k, byte[] c)
 	{
-		long x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15;
-		long j0, j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12, j13, j14, j15;
+		int x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15;
+		int j0, j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12, j13, j14, j15;
 		int i;
 
 		j0 = x0 = load_littleendian(c, 0);

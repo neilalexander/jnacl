@@ -5,7 +5,7 @@ public class poly1305
 	final int CRYPTO_BYTES = 16;
 	final int CRYPTO_KEYBYTES = 32;
 	
-	static final long[] minusp = {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252};
+	static final int[] minusp = {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252};
 
 	public static int crypto_onetimeauth_verify(byte[] h, int hoffset, byte[] inv, int invoffset, long inlen, byte[] k)
 	{
@@ -107,7 +107,7 @@ public class poly1305
 		r[4] = k[4] & 252;
 		r[5] = k[5]&0xff;
 		r[6] = k[6]&0xff;
-		r[7] = k[7] & 15);
+		r[7] = k[7] & 15;
 		r[8] = k[8] & 252;
 		r[9] = k[9]&0xff;
 		r[10] = k[10]&0xff;
