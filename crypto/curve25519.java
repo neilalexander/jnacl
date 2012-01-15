@@ -52,12 +52,12 @@ public class curve25519
 		{
 			u += a[aoffset + j];
 			a[aoffset + j] = u & 255;
-			u >>>= 8;
+			u >>= 8;
 		}
 		
 		u += a[aoffset + 31];
 		a[aoffset + 31] = u & 127;
-		u = 19 * (u >>> 7);
+		u = 19 * (u >> 7);
 		
 		for (int j = 0; j < 31; ++j)
 		{
@@ -81,7 +81,7 @@ public class curve25519
 		
 		add(a, 0, a, 0, minuspp, 0);
 		
-		int negative = (int) (-((a[aoffset + 31] >>> 7) & 1));
+		int negative = (int) (-((a[aoffset + 31] >> 7) & 1));
 		
 		for (int j = 0; j < 32; ++j)
 			a[aoffset + j] ^= negative & (aorig[j] ^ a[aoffset + j]);
@@ -121,7 +121,7 @@ public class curve25519
 		
 		u += 121665 * a[31];
 		outv[31] = u & 127;
-		u = 19 * (u >>> 7);
+		u = 19 * (u >> 7);
 		
 		for (j = 0; j < 31; ++j)
 		{
@@ -212,7 +212,7 @@ public class curve25519
 
 		for (int pos = 254; pos >= 0; --pos)
 		{
-			int b = ((int) (e[pos / 8] >>> (pos & 7)));
+			int b = ((int) (e[pos / 8] >> (pos & 7)));
 			b &= 1;
 			select(xzmb, xzm1b, xzm, xzm1, b);
 			add(a0, 	0,	xzmb, 	0,	xzmbp,	32);
