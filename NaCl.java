@@ -8,9 +8,9 @@ public class NaCl
 	static final int crypto_secretbox_NONCEBYTES = 24;
 	static final int crypto_secretbox_ZEROBYTES = 32;
 	static final int crypto_secretbox_BOXZEROBYTES = 16;
+	static final int crypto_secretbox_BEFORENMBYTES = 32;
 	
-	private byte[] privatekey = new byte[crypto_secretbox_KEYBYTES];
-	private byte[] publickey = new byte[crypto_secretbox_KEYBYTES];
+	private byte[] precomputed = new byte[crypto_secretbox_BEFORENMBYTES];
 	
 	public NaCl(byte[] privatekey, byte[] publickey) throws Exception
 	{
@@ -20,8 +20,7 @@ public class NaCl
 		if (publickey.length < crypto_secretbox_KEYBYTES)
 			throw new Exception("Public key too short");
 		
-		this.privatekey = privatekey;
-		this.publickey = publickey;
+		curve25519xsalsa20poly1305.crypto_box_beforenm(this.precomputed, publickey, privatekey);
 	}
 	
 	public NaCl(String privatekey, String publickey) throws Exception
@@ -32,8 +31,7 @@ public class NaCl
 		if (publickey.length() < crypto_secretbox_KEYBYTES * 2)
 			throw new Exception("Public key too short");
 		
-		this.privatekey = getBinary(privatekey);
-		this.publickey = getBinary(publickey);
+		curve25519xsalsa20poly1305.crypto_box_beforenm(this.precomputed, getBinary(publickey), getBinary(privatekey));
 	}
 	
 	public byte[] encrypt(byte[] input, byte[] nonce)
@@ -42,7 +40,7 @@ public class NaCl
 		byte[] output = new byte[input.length + crypto_secretbox_ZEROBYTES];
 		
 		System.arraycopy(input, 0, paddedinput, crypto_secretbox_ZEROBYTES, input.length);
-		curve25519xsalsa20poly1305.crypto_box(output, paddedinput, paddedinput.length, nonce, this.publickey, this.privatekey);
+		curve25519xsalsa20poly1305.crypto_box_afternm(output, paddedinput, paddedinput.length, nonce, this.precomputed);
 		
 		return output;
 	}
@@ -52,13 +50,13 @@ public class NaCl
 		byte[] paddedoutput = new byte[input.length];
 		byte[] output = new byte[input.length - crypto_secretbox_ZEROBYTES];
 		
-		curve25519xsalsa20poly1305.crypto_box(paddedoutput, input, input.length, nonce, this.publickey, this.privatekey);
+		curve25519xsalsa20poly1305.crypto_box_afternm(paddedoutput, input, input.length, nonce, this.precomputed);
 		System.arraycopy(paddedoutput, crypto_secretbox_ZEROBYTES, output, 0, paddedoutput.length - crypto_secretbox_ZEROBYTES);
 		
 		return output;
 	}
 	
-	private static byte[] getBinary(String s)
+	public static byte[] getBinary(String s)
 	{
 	    int len = s.length();
 	    byte[] data = new byte[len / 2];
