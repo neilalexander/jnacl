@@ -21,13 +21,12 @@ public class curve25519
 		for (int j = 0; j < 31; ++j)
 		{
 			u += a[aoffset + j] + b[boffset + j];
-			outv[outvoffset + j] = (u & 255) & 0xFF;
-			//u = (u & 0xFFFFFFFF) >> 8;
+			outv[outvoffset + j] = u & 255;
 			u >>>= 8;
 		}
 		
 		u += a[aoffset + 31] + b[boffset + 31];
-		outv[outvoffset + 31] = u & 0xFF;
+		outv[outvoffset + 31] = u;
 	}
 
 	static void sub(int[] outv, int outvoffset, int[] a, int aoffset, int[] b, int boffset)
@@ -38,12 +37,11 @@ public class curve25519
 		{
 			u += a[aoffset + j] + 65280 - b[boffset + j];
 			outv[outvoffset + j] = u & 255;
-			//u = (u & 0xFFFFFFFF) >> 8;
 			u >>>= 8;
 		}
 		
 		u += a[aoffset + 31] - b[boffset + 31];
-		outv[outvoffset + 31] = u & 0xFF;
+		outv[outvoffset + 31] = u;
 	}
 
 	static void squeeze(int[] a, int aoffset)
@@ -69,7 +67,7 @@ public class curve25519
 		}
 		
 		u += a[aoffset + 31];
-		a[aoffset + 31] = u & 0xFF;
+		a[aoffset + 31] = u;
 	}
 
 	static void freeze(int[] a, int aoffset)
@@ -83,8 +81,7 @@ public class curve25519
 		
 		add(a, 0, a, 0, minuspp, 0);
 		
-		long negative = (long) (-((a[aoffset + 31] >>> 7) & 1));
-		negative &= 0xFFFFFFFF;
+		int negative = (int) (-((a[aoffset + 31] >>> 7) & 1));
 		
 		for (int j = 0; j < 32; ++j)
 			a[aoffset + j] ^= negative & (aorig[j] ^ a[aoffset + j]);
@@ -104,7 +101,7 @@ public class curve25519
 			for (j = i + 1; j < 32; ++j)
 				u += 38 * a[aoffset + j] * b[boffset + i + 32 - j];
 			
-			outv[outvoffset + i] = u & 0xFFFFFFFF;
+			outv[outvoffset + i] = u;
 		}
 		
 		squeeze(outv, outvoffset);
@@ -119,22 +116,22 @@ public class curve25519
 		{
 			u += 121665 * a[j];
 			outv[j] = u & 255;
-			u = (u & 0xFFFFFFFF) >>> 8;
+			u >>>= 8;
 		}
 		
 		u += 121665 * a[31];
 		outv[31] = u & 127;
-		u = 19 * ((u & 0xFFFFFFFF) >>> 7);
+		u = 19 * (u >>> 7);
 		
 		for (j = 0; j < 31; ++j)
 		{
 			u += outv[j];
-			outv[j] = (u & 255) & 0xFF;
-			u = (u & 0xFFFFFFFF) >>> 8;
+			outv[j] = u & 255;
+			u >>>= 8;
 		}
 		
 		u += outv[j];
-		outv[j] = u & 0xFFFFFFFF;
+		outv[j] = u;
 	}
 	
 	static void square(int[] outv, int outvoffset, int[] a, int aoffset)
@@ -159,7 +156,7 @@ public class curve25519
 				u += 38 * a[aoffset + i / 2 + 16] * a[aoffset + i / 2 + 16];
 			}
 			
-			outv[outvoffset + i] = u & 0xFFFFFFFF;
+			outv[outvoffset + i] = u;
 		}
 		
 		squeeze(outv, outvoffset);
@@ -426,7 +423,7 @@ public class curve25519
 		e[31] |= 64;
 		
 		for (int i = 0; i < 32; ++i)
-			work[i] = p[i] & 0xFF;
+			work[i] = p[i];
 		
 		mainloop(work, e);
 		
