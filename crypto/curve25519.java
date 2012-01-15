@@ -104,7 +104,7 @@ public class curve25519
 			outv[outvoffset + i] = u & 0xFFFFFFFF;
 		}
 		
-		squeeze(outv, 0);
+		squeeze(outv, outvoffset);
 	}
 
 	static void mult121665(long[] outv, long[] a)
@@ -159,7 +159,7 @@ public class curve25519
 			outv[outvoffset + i] = u & 0xFFFFFFFF;
 		}
 		
-		squeeze(outv, 0);
+		squeeze(outv, outvoffset);
 	}
 
 	static void select(long[] p, long[] q, long[] r, long[] s, long b)
@@ -212,7 +212,7 @@ public class curve25519
 
 		for (int pos = 254; pos >= 0; --pos)
 		{
-			long b = (long)(e[pos / 8] >> (pos & 7));
+			long b = ((long) (e[pos / 8] >> (pos & 7))) & 0xffffffff;
 			b &= 1;
 			select(xzmb, xzm1b, xzm, xzm1, b);
 			add(a0, 	0,	xzmb, 	0,	xzmbp,	32);
