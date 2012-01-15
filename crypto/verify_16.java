@@ -9,8 +9,8 @@ public class verify_16
 		int differentbits = 0;
 		
 		for (int i = 0; i < 15; i++)
-			differentbits |= (int)(x[i] ^ y[i]);
+			differentbits |= ((int)(x[i] ^ y[i])) & 0xff;
 		
-		return (1 & (((int)differentbits - 1) >> 8)) - 1;
+		return (1 & (((int)differentbits - 1) >>> 8)) - 1;
 	}
 }
