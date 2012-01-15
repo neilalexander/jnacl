@@ -11,24 +11,24 @@ public class salsa20
 
 	final static int ROUNDS = 20;
 
-	static long rotate(long u, long c)
+	static long rotate(int u, int c)
 	{
-		return (u << c) | (u >> (32 - c));
+		return (u << c) | (u >>> (32 - c));
 	}
 
-	static long load_littleendian(byte[] x, int offset)
+	static int load_littleendian(byte[] x, int offset)
 	{
-		return (long)(x[offset]) |
-				(((long)(x[offset + 1])) << 8) |
-				(((long)(x[offset + 2])) << 16) |
-				(((long)(x[offset + 3])) << 24);
+		return (int)(x[offset]&0xff) |
+				(((int)(x[offset + 1]&0xff)) << 8) |
+				(((int)(x[offset + 2]&0xff)) << 16) |
+				(((int)(x[offset + 3]&0xff)) << 24);
 	}
 
-	static void store_littleendian(byte[] x, int offset, long u)
+	static void store_littleendian(byte[] x, int offset, int u)
 	{
-		x[offset] = (byte) u; u >>= 8;
-		x[offset + 1] = (byte) u; u >>= 8;
-		x[offset + 2] = (byte) u; u >>= 8;
+		x[offset] = (byte) u; u >>>= 8;
+		x[offset + 1] = (byte) u; u >>>= 8;
+		x[offset + 2] = (byte) u; u >>>= 8;
 		x[offset + 3] = (byte) u;
 	}
 
@@ -151,13 +151,13 @@ public class salsa20
 			
 			salsa20.crypto_core(c, invp, k, sigmap);
 
-			long u = 1;
+			int u = 1;
 			
 			for (int i = 8; i < 16; ++i)
 			{
-				u += (long) inv[i];
+				u += inv[i]&0xff;
 				inv[i] = (byte) u;
-				u >>= 8;
+				u >>>= 8;
 			}
 
 			clen -= 64;
@@ -207,13 +207,13 @@ public class salsa20
 			for (int i = 0; i < 64; ++i)
 				c[coffset + i] = (byte)(m[moffset + i] ^ block[i]);
 
-			long u = 1;
+			int u = 1;
 			
 			for (int i = 8; i < 16; ++i)
 			{
-				u += (long) inv[i];
+				u += inv[i]&0xff;
 				inv[i] = (byte) u;
-				u >>= 8;
+				u >>>= 8;
 			}
 
 			mlen -= 64;

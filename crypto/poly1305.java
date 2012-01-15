@@ -16,7 +16,7 @@ public class poly1305
 		return verify_16.crypto_verify(h, correctp);
 	}
 
-	static void add(long[] h, long[] c)
+	static void add(int[] h, int[] c)
 	{
 		int j;
 		int u = 0;
@@ -25,11 +25,11 @@ public class poly1305
 		{
 			u += h[j] + c[j];
 			h[j] = u & 255;
-			u >>= 8;
+			u >>>= 8;
 		}
 	}
 
-	static void squeeze(long[] h)
+	static void squeeze(int[] h)
 	{
 		int u = 0;
 		
@@ -37,46 +37,46 @@ public class poly1305
 		{
 			u += h[j]; 
 			h[j] = u & 255; 
-			u >>= 8;
+			u >>>= 8;
 		}
 		
 		u += h[16];
 		h[16] = u & 3;
-		u = 5 * (u >> 2);
+		u = 5 * (u >>> 2);
 		
 		for (int j = 0; j < 16; ++j)
 		{
 			u += h[j];
 			h[j] = u & 255;
-			u >>= 8;
+			u >>>= 8;
 		}
 		
 		u += h[16];
 		h[16] = u;
 	}
 
-	static void freeze(long[] h)
+	static void freeze(int[] h)
 	{
-		long[] horig = new long[17];
+		int[] horig = new int[17];
 		
 		for (int j = 0; j < 17; ++j)
 			horig[j] = h[j];
 		
 		add(h, minusp);
 		
-		long negative = (long)(-(h[16] >> 7));
+		int negative = (int)(-(h[16] >>> 7));
 		
 		for (int j = 0; j < 17; ++j)
 			h[j] ^= negative & (horig[j] ^ h[j]);
 	}
 
-	static void mulmod(long[] h, long[] r)
+	static void mulmod(int[] h, int[] r)
 	{
-		long[] hr = new long[17];
+		int[] hr = new int[17];
 		
 		for (int i = 0; i < 17; ++i)
 		{
-			long u = 0;
+			int u = 0;
 			
 			for (int j = 0; j <= i; ++j) 
 				u += h[j] * r[i - j];
@@ -96,26 +96,26 @@ public class poly1305
 	public static int crypto_onetimeauth(byte[] outv, int outvoffset, byte[] inv, int invoffset, long inlen, byte[] k)
 	{
 		int j;
-		long[] r = new long[17];
-		long[] h = new long[17];
-		long[] c = new long[17];
+		int[] r = new int[17];
+		int[] h = new int[17];
+		int[] c = new int[17];
 
-		r[0] = k[0];
-		r[1] = k[1];
-		r[2] = k[2];
-		r[3] = (long)(k[3] & 15);
-		r[4] = (long)(k[4] & 252);
-		r[5] = k[5];
-		r[6] = k[6];
-		r[7] = (long)(k[7] & 15);
-		r[8] = (long)(k[8] & 252);
-		r[9] = k[9];
-		r[10] = k[10];
-		r[11] = (long)(k[11] & 15);
-		r[12] = (long)(k[12] & 252);
-		r[13] = k[13];
-		r[14] = k[14];
-		r[15] = (long)(k[15] & 15);
+		r[0] = k[0]&0xff;
+		r[1] = k[1]&0xff;
+		r[2] = k[2]&0xff;
+		r[3] = k[3] & 15;
+		r[4] = k[4] & 252;
+		r[5] = k[5]&0xff;
+		r[6] = k[6]&0xff;
+		r[7] = k[7] & 15);
+		r[8] = k[8] & 252;
+		r[9] = k[9]&0xff;
+		r[10] = k[10]&0xff;
+		r[11] = k[11] & 15;
+		r[12] = k[12] & 252;
+		r[13] = k[13]&0xff;
+		r[14] = k[14]&0xff;
+		r[15] = k[15] & 15;
 		r[16] = 0;
 
 		for (j = 0; j < 17; ++j)
@@ -127,7 +127,7 @@ public class poly1305
 				c[j] = 0;
 			
 			for (j = 0; (j < 16) && (j < inlen); ++j)
-				c[j] = inv[invoffset + j];
+				c[j] = inv[invoffset + j]&0xff;
 			
 			c[j] = 1;
 			invoffset += j;
