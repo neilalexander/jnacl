@@ -1,4 +1,4 @@
-package jnacl.crypto;
+package com.neilalexander.jnacl.crypto;
 
 public class hsalsa20
 {

@@ -1,5 +1,4 @@
-package jnacl.crypto;
-
+package com.neilalexander.jnacl.crypto;
 
 public class curve25519xsalsa20poly1305
 {
