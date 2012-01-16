@@ -427,10 +427,9 @@ public class curve25519
 		
 		mainloop(work, e);
 		
-		int[] workp = work;
-		recip(workp, 32, workp, 32);
-		mult(workp, 64, workp, 0, workp, 32);
-		freeze(workp, 64);
+		recip(work, 32, work, 32);
+		mult(work, 64, work, 0, work, 32);
+		freeze(work, 64);
 		
 		for (int i = 0; i < 32; ++i)
 			q[i] = (byte) work[64 + i];
