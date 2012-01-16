@@ -428,7 +428,7 @@ public class curve25519
 		mainloop(work, e);
 		
 		recip(work, 32, work, 32);
-		mult(work, 64, work, 0, work, 32);
+		mult(work, 64, work, 0, work, 32);		
 		freeze(work, 64);
 		
 		for (int i = 0; i < 32; ++i)

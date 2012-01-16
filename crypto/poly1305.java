@@ -11,8 +11,8 @@ public class poly1305
 	{
 		byte[] correct = new byte[16];
 		
-		crypto_onetimeauth(correct, hoffset, inv, invoffset, inlen, k);
-		return verify_16.crypto_verify(h, correct);
+		crypto_onetimeauth(correct, 0, inv, invoffset, inlen, k);
+		return verify_16.crypto_verify(h, hoffset, correct);
 	}
 
 	static void add(int[] h, int[] c)
@@ -99,21 +99,21 @@ public class poly1305
 		int[] h = new int[17];
 		int[] c = new int[17];
 
-		r[0] = k[0]&0xff;
-		r[1] = k[1]&0xff;
-		r[2] = k[2]&0xff;
+		r[0] = k[0] & 0xFF;
+		r[1] = k[1] & 0xFF;
+		r[2] = k[2] & 0xFF;
 		r[3] = k[3] & 15;
 		r[4] = k[4] & 252;
-		r[5] = k[5]&0xff;
-		r[6] = k[6]&0xff;
+		r[5] = k[5] & 0xFF;
+		r[6] = k[6] & 0xFF;
 		r[7] = k[7] & 15;
 		r[8] = k[8] & 252;
-		r[9] = k[9]&0xff;
-		r[10] = k[10]&0xff;
+		r[9] = k[9] & 0xFF;
+		r[10] = k[10] & 0xFF;
 		r[11] = k[11] & 15;
 		r[12] = k[12] & 252;
-		r[13] = k[13]&0xff;
-		r[14] = k[14]&0xff;
+		r[13] = k[13] & 0xFF;
+		r[14] = k[14] & 0xFF;
 		r[15] = k[15] & 15;
 		r[16] = 0;
 
@@ -138,13 +138,13 @@ public class poly1305
 		freeze(h);
 
 		for (j = 0; j < 16; ++j) 
-			c[j] = k[j + 16];
+			c[j] = k[j + 16] & 0xFF;
 		
 		c[16] = 0;
 		add(h, c);
 		
 		for (j = 0; j < 16; ++j) 
-			outv[j] = (byte)h[j];
+			outv[j + outvoffset] = (byte)h[j];
 		
 		return 0;
 	}

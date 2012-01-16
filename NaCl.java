@@ -92,4 +92,12 @@ public class NaCl
 			formatter.format("%02x", b);
 		return formatter.toString();
 	}
+	
+	public static String asHex(int[] buf)
+	{
+		Formatter formatter = new Formatter();
+		for (int b : buf)
+			formatter.format("%02x", b);
+		return formatter.toString();
+	}
 }

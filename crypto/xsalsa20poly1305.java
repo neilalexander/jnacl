@@ -11,7 +11,7 @@ public class xsalsa20poly1305
 	{
 		if (mlen < 32)
 			return -1;
-		
+
 		xsalsa20.crypto_stream_xor(c, m, mlen, n, k);
 		poly1305.crypto_onetimeauth(c, 16, c, 32, mlen - 32, c);
 		
