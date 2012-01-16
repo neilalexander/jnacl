@@ -11,7 +11,7 @@ public class NaCl
 	static final int crypto_secretbox_ZEROBYTES = 32;
 	static final int crypto_secretbox_BOXZEROBYTES = 16;
 	static final int crypto_secretbox_BEFORENMBYTES = 32;
-	
+
 	private byte[] precomputed = new byte[crypto_secretbox_BEFORENMBYTES];
 	
 	public NaCl(byte[] privatekey, byte[] publickey) throws Exception
@@ -21,25 +21,13 @@ public class NaCl
 		
 		if (publickey.length < crypto_secretbox_KEYBYTES)
 			throw new Exception("Public key too short");
-		
+
 		curve25519xsalsa20poly1305.crypto_box_beforenm(this.precomputed, publickey, privatekey);
-		//System.out.println("int1: " + asHex(this.precomputed));
-		//this.precomputed = getBinary("74af7e9b705bdb51a512c9c915dd79779abc3ec86d0e099c0242b52a28749e83");
-		//System.out.println("int2: " + asHex(this.precomputed));
 	}
 	
 	public NaCl(String privatekey, String publickey) throws Exception
-	{				
-		if (privatekey.length() < crypto_secretbox_KEYBYTES * 2)
-			throw new Exception("Private key too short");
-		
-		if (publickey.length() < crypto_secretbox_KEYBYTES * 2)
-			throw new Exception("Public key too short");
-		
-		curve25519xsalsa20poly1305.crypto_box_beforenm(this.precomputed, getBinary(publickey), getBinary(privatekey));
-		//System.out.println("int1: " + asHex(this.precomputed));
-		//this.precomputed = getBinary("74af7e9b705bdb51a512c9c915dd79779abc3ec86d0e099c0242b52a28749e83");
-		//System.out.println("int2: " + asHex(this.precomputed));
+	{			
+		this(getBinary(privatekey), getBinary(publickey));
 	}
 	
 	public byte[] encrypt(byte[] input, byte[] nonce)
@@ -92,10 +80,7 @@ public class NaCl
 	    byte[] data = new byte[len / 2];
 	    
 	    for (int i = 0; i < len; i += 2)
-	    {
-	        data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-	                              + Character.digit(s.charAt(i+1), 16));
-	    }
+	        data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i+1), 16));
 	    
 	    return data;
 	}
