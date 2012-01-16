@@ -10,10 +10,9 @@ public class poly1305
 	public static int crypto_onetimeauth_verify(byte[] h, int hoffset, byte[] inv, int invoffset, long inlen, byte[] k)
 	{
 		byte[] correct = new byte[16];
-		byte[] correctp = correct;
 		
-		crypto_onetimeauth(correctp, hoffset, inv, invoffset, inlen, k);
-		return verify_16.crypto_verify(h, correctp);
+		crypto_onetimeauth(correct, hoffset, inv, invoffset, inlen, k);
+		return verify_16.crypto_verify(h, correct);
 	}
 
 	static void add(int[] h, int[] c)

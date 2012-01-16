@@ -13,20 +13,16 @@ public class xsalsa20
 	public static int crypto_stream(byte[] c, int clen, byte[] n, byte[] k)
 	{
 		byte[] subkey = new byte[32];
-		byte[] subkeyp = subkey;
-		byte[] sigmap = sigma;
 		
-		hsalsa20.crypto_core(subkeyp, n, k, sigmap);
-		return salsa20.crypto_stream(c, clen, n, 16, subkeyp);
+		hsalsa20.crypto_core(subkey, n, k, sigma);
+		return salsa20.crypto_stream(c, clen, n, 16, subkey);
 	}
 	
 	public static int crypto_stream_xor(byte[] c, byte[] m, long mlen, byte[] n, byte[] k)
 	{
 		byte[] subkey = new byte[32];
-		byte[] subkeyp = subkey;
-		byte[] sigmap = sigma;
 		
-		hsalsa20.crypto_core(subkeyp, n, k, sigmap);
-		return salsa20.crypto_stream_xor(c, m, (int) mlen, n, 16, subkeyp);
+		hsalsa20.crypto_core(subkey, n, k, sigma);
+		return salsa20.crypto_stream_xor(c, m, (int) mlen, n, 16, subkey);
 	}
 }

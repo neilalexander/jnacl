@@ -145,11 +145,8 @@ public class salsa20
 			inv[i] = 0;
 
 		while (clen >= 64)
-		{
-			byte[] invp = inv;
-			byte[] sigmap = xsalsa20.sigma;
-			
-			salsa20.crypto_core(c, invp, k, sigmap);
+		{		
+			salsa20.crypto_core(c, inv, k, xsalsa20.sigma);
 
 			int u = 1;
 			
@@ -165,12 +162,8 @@ public class salsa20
 		}
 
 		if (clen != 0)
-		{
-			byte[] invp = inv;
-			byte[] sigmap = xsalsa20.sigma;
-			byte[] blockp = block;
-			
-			salsa20.crypto_core(blockp, invp, k, sigmap);
+		{			
+			salsa20.crypto_core(block, inv, k, xsalsa20.sigma);
 			
 			for (int i = 0; i < clen; ++i)
 				c[coffset + i] = block[i];
@@ -197,12 +190,8 @@ public class salsa20
 			inv[i] = 0;
 
 		while (mlen >= 64)
-		{
-			byte[] invp = inv;
-			byte[] sigmap = xsalsa20.sigma;
-			byte[] blockp = block;
-			
-			salsa20.crypto_core(blockp, invp, k, sigmap);
+		{			
+			salsa20.crypto_core(block, inv, k, xsalsa20.sigma);
 			
 			for (int i = 0; i < 64; ++i)
 				c[coffset + i] = (byte)(m[moffset + i] ^ block[i]);
@@ -223,11 +212,7 @@ public class salsa20
 
 		if (mlen != 0)
 		{
-			byte[] invp = inv;
-			byte[] sigmap = xsalsa20.sigma;
-			byte[] blockp = block;
-			
-			salsa20.crypto_core(blockp, invp, k, sigmap);
+			salsa20.crypto_core(block, inv, k, xsalsa20.sigma);
 			
 			for (int i = 0; i < mlen; ++i)
 				c[coffset + i] = (byte)(m[moffset + i] ^ block[i]);
