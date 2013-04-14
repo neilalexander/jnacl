@@ -41,14 +41,8 @@ public class NaCl
 
 	private byte[] precomputed = new byte[crypto_secretbox_BEFORENMBYTES];
 	
-	public NaCl(byte[] privatekey, byte[] publickey) throws Exception
+	public NaCl(byte[] privatekey, byte[] publickey)
 	{
-		if (privatekey.length < crypto_secretbox_KEYBYTES)
-			throw new Exception("Private key too short");
-		
-		if (publickey.length < crypto_secretbox_KEYBYTES)
-			throw new Exception("Public key too short");
-
 		curve25519xsalsa20poly1305.crypto_box_beforenm(this.precomputed, publickey, privatekey);
 	}
 	
@@ -59,45 +53,42 @@ public class NaCl
 	
 	public byte[] encrypt(byte[] input, byte[] nonce)
 	{
-		byte[] paddedinput = new byte[input.length + crypto_secretbox_ZEROBYTES];
-		byte[] output = new byte[input.length + crypto_secretbox_ZEROBYTES];
-		
-		System.arraycopy(input, 0, paddedinput, crypto_secretbox_ZEROBYTES, input.length);
-		curve25519xsalsa20poly1305.crypto_box_afternm(output, paddedinput, paddedinput.length, nonce, this.precomputed);
-		
-		return output;
+		return encrypt(input, 0, input.length, nonce);
 	}
 	
 	public byte[] encrypt(byte[] input, int inputlength, byte[] nonce)
 	{
-		byte[] paddedinput = new byte[inputlength + crypto_secretbox_ZEROBYTES];
-		byte[] output = new byte[inputlength + crypto_secretbox_ZEROBYTES];
-		
-		System.arraycopy(input, 0, paddedinput, crypto_secretbox_ZEROBYTES, inputlength);
-		curve25519xsalsa20poly1305.crypto_box_afternm(output, paddedinput, paddedinput.length, nonce, this.precomputed);
-		
+		return encrypt(input, 0, inputlength, nonce);
+	}
+	
+	public byte[] encrypt(byte[] input, int inputoffset, int inputlength, byte[] nonce)
+	{
+		byte[] paddedbuffer = new byte[inputlength + crypto_secretbox_ZEROBYTES];
+		System.arraycopy(input, inputoffset, paddedbuffer, crypto_secretbox_ZEROBYTES, inputlength);
+		curve25519xsalsa20poly1305.crypto_box_afternm(paddedbuffer, paddedbuffer, paddedbuffer.length, nonce, this.precomputed);
+		byte[] output = new byte[inputlength + crypto_secretbox_BOXZEROBYTES];
+		System.arraycopy(paddedbuffer, crypto_secretbox_ZEROBYTES - crypto_secretbox_BOXZEROBYTES, output, 0, output.length);
 		return output;
 	}
 	
 	public byte[] decrypt(byte[] input, byte[] nonce)
 	{
-		byte[] paddedoutput = new byte[input.length];
-		byte[] output = new byte[input.length - crypto_secretbox_ZEROBYTES];
-		
-		curve25519xsalsa20poly1305.crypto_box_afternm(paddedoutput, input, input.length, nonce, this.precomputed);
-		System.arraycopy(paddedoutput, crypto_secretbox_ZEROBYTES, output, 0, paddedoutput.length - crypto_secretbox_ZEROBYTES);
-		
-		return output;
+		return decrypt(input, 0, input.length, nonce);
 	}
 	
 	public byte[] decrypt(byte[] input, int inputlength, byte[] nonce)
 	{
-		byte[] paddedoutput = new byte[inputlength];
-		byte[] output = new byte[inputlength - crypto_secretbox_ZEROBYTES];
-		
-		curve25519xsalsa20poly1305.crypto_box_afternm(paddedoutput, input, inputlength, nonce, this.precomputed);
-		System.arraycopy(paddedoutput, crypto_secretbox_ZEROBYTES, output, 0, paddedoutput.length - crypto_secretbox_ZEROBYTES);
-		
+		return decrypt(input, 0, inputlength, nonce);
+	}
+	
+	public byte[] decrypt(byte[] input, int inputoffset, int inputlength, byte[] nonce)
+	{
+		byte[] paddedbuffer = new byte[inputlength + crypto_secretbox_BOXZEROBYTES];
+		System.arraycopy(input, inputoffset, paddedbuffer, crypto_secretbox_BOXZEROBYTES, inputlength);
+		if (curve25519xsalsa20poly1305.crypto_box_afternm(paddedbuffer, paddedbuffer, paddedbuffer.length, nonce, this.precomputed) != 0)
+			throw new SecurityException("Decryption failed");
+		byte[] output = new byte[paddedbuffer.length - crypto_secretbox_ZEROBYTES];
+		System.arraycopy(paddedbuffer, crypto_secretbox_ZEROBYTES, output, 0, output.length);
 		return output;
 	}
 	
