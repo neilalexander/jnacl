@@ -27,6 +27,8 @@
 
 package com.neilalexander.jnacl.crypto;
 
+import java.security.SecureRandom;
+
 public class curve25519xsalsa20poly1305
 {
 	public static final int crypto_secretbox_PUBLICKEYBYTES = 32;
@@ -38,6 +40,12 @@ public class curve25519xsalsa20poly1305
 	
 	public static int crypto_box_getpublickey(byte[] pk, byte[] sk)
 	{
+		return curve25519.crypto_scalarmult_base(pk, sk);
+	}
+	
+	public static int crypto_box_keypair(byte[] pk, byte[] sk) {
+		SecureRandom rng = new SecureRandom();
+		rng.nextBytes(pk);
 		return curve25519.crypto_scalarmult_base(pk, sk);
 	}
 	
