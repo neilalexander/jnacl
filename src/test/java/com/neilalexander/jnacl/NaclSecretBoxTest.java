@@ -1,3 +1,5 @@
+package com.neilalexander.jnacl;
+
 import com.neilalexander.jnacl.crypto.xsalsa20poly1305;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
