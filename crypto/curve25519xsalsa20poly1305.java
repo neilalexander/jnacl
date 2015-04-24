@@ -45,7 +45,7 @@ public class curve25519xsalsa20poly1305
 	
 	public static int crypto_box_keypair(byte[] pk, byte[] sk) {
 		SecureRandom rng = new SecureRandom();
-		rng.nextBytes(pk);
+		rng.nextBytes(sk);
 		return curve25519.crypto_scalarmult_base(pk, sk);
 	}
 	
