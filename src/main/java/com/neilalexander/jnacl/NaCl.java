@@ -78,7 +78,7 @@ public class NaCl {
     byte[] paddedoutput = new byte[input.length];
     byte[] output = new byte[input.length - crypto_secretbox_ZEROBYTES];
 
-    curve25519xsalsa20poly1305.crypto_box_afternm(paddedoutput, input, input.length, nonce, this.precomputed);
+    curve25519xsalsa20poly1305.crypto_box_open_afternm(paddedoutput, input, input.length, nonce, this.precomputed);
     System.arraycopy(paddedoutput, crypto_secretbox_ZEROBYTES, output, 0, paddedoutput.length - crypto_secretbox_ZEROBYTES);
 
     return output;
@@ -88,7 +88,7 @@ public class NaCl {
     byte[] paddedoutput = new byte[inputlength];
     byte[] output = new byte[inputlength - crypto_secretbox_ZEROBYTES];
 
-    curve25519xsalsa20poly1305.crypto_box_afternm(paddedoutput, input, inputlength, nonce, this.precomputed);
+    curve25519xsalsa20poly1305.crypto_box_open_afternm(paddedoutput, input, inputlength, nonce, this.precomputed);
     System.arraycopy(paddedoutput, crypto_secretbox_ZEROBYTES, output, 0, paddedoutput.length - crypto_secretbox_ZEROBYTES);
 
     return output;
