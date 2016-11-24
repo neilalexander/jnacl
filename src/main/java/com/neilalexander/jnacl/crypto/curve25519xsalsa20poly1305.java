@@ -49,6 +49,26 @@ public class curve25519xsalsa20poly1305
 		return curve25519.crypto_scalarmult_base(pk, sk);
 	}
 	
+	public static int crypto_box_keypair_with_seed(byte[] pk, byte[] sk, byte[] seed) {
+		// create secret key randomly (default RNG of current platform)
+		SecureRandom rng = new SecureRandom();
+		byte[] random = new byte[crypto_secretbox_SECRETKEYBYTES];
+		rng.nextBytes(random);
+
+		// create more or less random number from seed
+		SecureRandom rngSeeded = SecureRandom.getInstance("SHA1PRNG");
+		rngSeeded.setSeed(seed);
+		byte[] randomSeeded = new byte[crypto_secretbox_SECRETKEYBYTES];
+		rngSeeded.nextBytes(randomSeeded);
+
+		// XOR the two random numbers, forming the secret key
+		for (byte b : random) {
+			sk[i] = b ^ randomSeeded[i++];
+		}
+
+		return curve25519.crypto_scalarmult_base(pk, sk);
+	}
+	
 	public static int crypto_box_afternm(byte[] c, byte[] m, long mlen, byte[] n, byte[] k)
 	{
 		return xsalsa20poly1305.crypto_secretbox(c, m, mlen, n, k);
