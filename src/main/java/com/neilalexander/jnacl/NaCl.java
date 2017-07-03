@@ -55,13 +55,7 @@ public class NaCl {
   }
 
   public byte[] encrypt(byte[] input, byte[] nonce) {
-    byte[] paddedinput = new byte[input.length + crypto_secretbox_ZEROBYTES];
-    byte[] output = new byte[input.length + crypto_secretbox_ZEROBYTES];
-
-    System.arraycopy(input, 0, paddedinput, crypto_secretbox_ZEROBYTES, input.length);
-    curve25519xsalsa20poly1305.crypto_box_afternm(output, paddedinput, paddedinput.length, nonce, this.precomputed);
-
-    return output;
+    return encrypt(input, input.length, nonce);
   }
 
   public byte[] encrypt(byte[] input, int inputlength, byte[] nonce) {
@@ -75,20 +69,14 @@ public class NaCl {
   }
 
   public byte[] decrypt(byte[] input, byte[] nonce) {
-    byte[] paddedoutput = new byte[input.length];
-    byte[] output = new byte[input.length - crypto_secretbox_ZEROBYTES];
-
-    curve25519xsalsa20poly1305.crypto_box_afternm(paddedoutput, input, input.length, nonce, this.precomputed);
-    System.arraycopy(paddedoutput, crypto_secretbox_ZEROBYTES, output, 0, paddedoutput.length - crypto_secretbox_ZEROBYTES);
-
-    return output;
+    return decrypt(input, input.length, nonce);
   }
 
   public byte[] decrypt(byte[] input, int inputlength, byte[] nonce) {
     byte[] paddedoutput = new byte[inputlength];
     byte[] output = new byte[inputlength - crypto_secretbox_ZEROBYTES];
 
-    curve25519xsalsa20poly1305.crypto_box_afternm(paddedoutput, input, inputlength, nonce, this.precomputed);
+    curve25519xsalsa20poly1305.crypto_box_open_afternm(paddedoutput, input, inputlength, nonce, this.precomputed);
     System.arraycopy(paddedoutput, crypto_secretbox_ZEROBYTES, output, 0, paddedoutput.length - crypto_secretbox_ZEROBYTES);
 
     return output;
