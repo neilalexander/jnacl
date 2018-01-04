@@ -9,12 +9,12 @@
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Pure Java implementation of NaCl: Networking and Cryptography library.</description>
-  <url>https://github.com/nitram509/jnacl</url>
+  <url>https://github.com/neilalexander/jnacl</url>
 
   <scm>
-    <url>scm:git:git@github.com:nitram509/jmacaroons.git</url>
-    <connection>scm:git:git@github.com:nitram509/jmacaroons.git</connection>
-    <developerConnection>scm:git:git@github.com:nitram509/jmacaroons.git</developerConnection>
+    <url>scm:git:git@github.com:neilalexander/jnacl.git</url>
+    <connection>scm:git:git@github.com:neilalexander/jnacl.git</connection>
+    <developerConnection>scm:git:git@github.com:neilalexander/jnacl.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
@@ -39,6 +39,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <manifest-file>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifest-file>
   </properties>
 
   <dependencies>
@@ -60,13 +61,34 @@
     <plugins>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <archive>
+            <manifestFile>${manifest-file}</manifestFile>
+          </archive>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <manifestPath>${manifest-file}</manifestPath>
+          <bnd><![CDATA[
+Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
+-exportcontents: com.neilalexander.jnacl.crypto, com.neilalexander.jnacl
+]]>
+          </bnd>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>bnd-process</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>
