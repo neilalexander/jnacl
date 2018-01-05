@@ -12,7 +12,7 @@
   <url>https://github.com/neilalexander/jnacl</url>
 
   <scm>
-    <url>scm:git:git@github.com:neilalexander/jnacl.git</url>
+    <url>git@github.com:neilalexander/jnacl.git</url>
     <connection>scm:git:git@github.com:neilalexander/jnacl.git</connection>
     <developerConnection>scm:git:git@github.com:neilalexander/jnacl.git</developerConnection>
     <tag>HEAD</tag>
