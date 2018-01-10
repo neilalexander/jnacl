@@ -100,7 +100,8 @@
           <manifestPath>${manifest-file}</manifestPath>
           <bnd><![CDATA[
 Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
--exportcontents: com.neilalexander.jnacl.crypto, com.neilalexander.jnacl
+Bundle-Version: ${project.version}
+-exportcontents: com.neilalexander.jnacl.crypto;version="${project.version}", com.neilalexander.jnacl;version="${project.version}"
 ]]>
           </bnd>
         </configuration>
