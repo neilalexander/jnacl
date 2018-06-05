@@ -4,7 +4,7 @@
 
   <groupId>eu.neilalexander</groupId>
   <artifactId>jnacl</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -15,7 +15,7 @@
     <url>git@github.com:neilalexander/jnacl.git</url>
     <connection>scm:git:git@github.com:neilalexander/jnacl.git</connection>
     <developerConnection>scm:git:git@github.com:neilalexander/jnacl.git</developerConnection>
-    <tag>v1.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <licenses>
