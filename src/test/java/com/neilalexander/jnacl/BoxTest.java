@@ -240,4 +240,39 @@ public class BoxTest {
         }
     }
 
+    @Test
+    public void test_crypto_cryptobox_6() throws Exception {
+        Random random = new Random();
+        for (int mlen = 0; mlen < 1000; ++mlen) {
+            byte[] alicepk = new byte[crypto_secretbox_PUBLICKEYBYTES];
+            byte[] alicesk = new byte[crypto_secretbox_SECRETKEYBYTES];
+            byte[] bobpk = new byte[crypto_secretbox_PUBLICKEYBYTES];
+            byte[] bobsk = new byte[crypto_secretbox_SECRETKEYBYTES];
+            curve25519xsalsa20poly1305.crypto_box_keypair(alicepk, alicesk);
+            curve25519xsalsa20poly1305.crypto_box_keypair(bobpk, bobsk);
+            byte[] nonce = new byte[crypto_secretbox_NONCEBYTES];
+            random.nextBytes(nonce);
+            byte[] m = new byte[mlen];
+            random.nextBytes(m);
+
+            NaCl nacl = new NaCl(bobpk, alicesk);
+            byte[] c = nacl.encrypt(m, nonce);
+            int caught = 0;
+
+            while (caught < 10) {
+                byte[] b = new byte[1];
+                random.nextBytes(b);
+                c[random.nextInt(c.length)] = b[0];
+                NaCl nacl2 = new NaCl(alicepk, bobsk);
+                try {
+                    byte[] m2 = nacl2.decrypt(c, nonce);
+                    assertThat(m2).isNotEqualTo(m);
+                } catch (Exception e) {
+                    assertThat(e).isInstanceOf(SecurityException.class)
+                            .hasMessage("ciphertext fails verification");
+                    caught++;
+                }
+            }
+        }
+    }
 }

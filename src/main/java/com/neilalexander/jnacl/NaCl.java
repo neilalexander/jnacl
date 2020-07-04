@@ -68,15 +68,17 @@ public class NaCl {
     return output;
   }
 
-  public byte[] decrypt(byte[] input, byte[] nonce) {
+  public byte[] decrypt(byte[] input, byte[] nonce) throws Exception {
     return decrypt(input, input.length, nonce);
   }
 
-  public byte[] decrypt(byte[] input, int inputlength, byte[] nonce) {
+  public byte[] decrypt(byte[] input, int inputlength, byte[] nonce) throws Exception {
     byte[] paddedoutput = new byte[inputlength];
     byte[] output = new byte[inputlength - crypto_secretbox_ZEROBYTES];
 
-    curve25519xsalsa20poly1305.crypto_box_open_afternm(paddedoutput, input, inputlength, nonce, this.precomputed);
+    if (curve25519xsalsa20poly1305.crypto_box_open_afternm(paddedoutput, input, inputlength, nonce, this.precomputed) != 0) {
+      throw new SecurityException("ciphertext fails verification");
+    }
     System.arraycopy(paddedoutput, crypto_secretbox_ZEROBYTES, output, 0, paddedoutput.length - crypto_secretbox_ZEROBYTES);
 
     return output;
