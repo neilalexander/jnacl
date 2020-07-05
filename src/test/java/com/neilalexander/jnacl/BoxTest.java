@@ -1,13 +1,14 @@
 package com.neilalexander.jnacl;
 
 import com.neilalexander.jnacl.crypto.curve25519xsalsa20poly1305;
-import org.fest.assertions.Assert;
+import org.fest.assertions.Fail;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.Random;
 
+import static com.neilalexander.jnacl.RandomBytes.random;
+import static com.neilalexander.jnacl.RandomBytes.randombytes;
 import static com.neilalexander.jnacl.crypto.curve25519xsalsa20poly1305.*;
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -17,7 +18,7 @@ public class BoxTest {
     private byte[] alicesk;
     private byte[] bobpk;
     private byte[] bobsk;
-    private byte[] nonce;
+    private byte[] n;
     private byte[] m;
     private byte[] mbytes;
 
@@ -47,7 +48,7 @@ public class BoxTest {
                 (byte) 0x3f, (byte) 0x83, (byte) 0x43, (byte) 0xc8, (byte) 0x5b, (byte) 0x78, (byte) 0x67, (byte) 0x4d,
                 (byte) 0xad, (byte) 0xfc, (byte) 0x7e, (byte) 0x14, (byte) 0x6f, (byte) 0x88, (byte) 0x2b, (byte) 0x4f
         };
-        nonce = new byte[]{
+        n = new byte[]{
                 (byte) 0x69, (byte) 0x69, (byte) 0x6e, (byte) 0xe9, (byte) 0x55, (byte) 0xb6, (byte) 0x2b, (byte) 0x73,
                 (byte) 0xcd, (byte) 0x62, (byte) 0xbd, (byte) 0xa8, (byte) 0x75, (byte) 0xfc, (byte) 0x73, (byte) 0xd6,
                 (byte) 0x82, (byte) 0x19, (byte) 0xe0, (byte) 0x03, (byte) 0x6b, (byte) 0x7a, (byte) 0x0b, (byte) 0x37
@@ -101,7 +102,7 @@ public class BoxTest {
     @Test
     public void test_crypto_cryptobox_1() throws Exception {
         byte[] c = new byte[m.length];
-        curve25519xsalsa20poly1305.crypto_box(c, m, m.length, nonce, bobpk, alicesk);
+        curve25519xsalsa20poly1305.crypto_box(c, m, m.length, n, bobpk, alicesk);
         byte[] expected_c = new byte[]{
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -131,7 +132,7 @@ public class BoxTest {
     @Test
     public void test_crypto_cryptobox_2() throws Exception {
         byte[] c = new byte[m.length];
-        curve25519xsalsa20poly1305.crypto_box(c, m, m.length, nonce, alicepk, bobsk);
+        curve25519xsalsa20poly1305.crypto_box(c, m, m.length, n, alicepk, bobsk);
         byte[] expected_c = new byte[]{
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -161,7 +162,7 @@ public class BoxTest {
     @Test
     public void test_crypto_cryptobox_3() throws Exception {
         NaCl nacl = new NaCl(bobsk, alicepk);
-        byte[] c = nacl.encrypt(mbytes, nonce);
+        byte[] c = nacl.encrypt(mbytes, n);
         byte[] expected_c = new byte[]{
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -191,7 +192,7 @@ public class BoxTest {
     @Test
     public void test_crypto_cryptobox_4() throws Exception {
         NaCl nacl = new NaCl(alicesk, bobpk);
-        byte[] c = nacl.encrypt(mbytes, nonce);
+        byte[] c = nacl.encrypt(mbytes, n);
         byte[] expected_c = new byte[]{
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -220,7 +221,6 @@ public class BoxTest {
 
     @Test
     public void test_crypto_cryptobox_5() throws Exception {
-        Random random = new Random();
         for (int mlen = 0; mlen < 1000; ++mlen) {
             byte[] alicepk = new byte[crypto_secretbox_PUBLICKEYBYTES];
             byte[] alicesk = new byte[crypto_secretbox_SECRETKEYBYTES];
@@ -228,14 +228,15 @@ public class BoxTest {
             byte[] bobsk = new byte[crypto_secretbox_SECRETKEYBYTES];
             curve25519xsalsa20poly1305.crypto_box_keypair(alicepk, alicesk);
             curve25519xsalsa20poly1305.crypto_box_keypair(bobpk, bobsk);
-            byte[] nonce = new byte[crypto_secretbox_NONCEBYTES];
-            random.nextBytes(nonce);
+            byte[] n = new byte[crypto_secretbox_NONCEBYTES];
+            randombytes(n, 0, crypto_secretbox_NONCEBYTES);
             byte[] m = new byte[mlen];
-            random.nextBytes(m);
+            randombytes(m, 0, mlen);
+
             NaCl nacl = new NaCl(alicesk, bobpk);
-            byte[] c = nacl.encrypt(m, nonce);
+            byte[] c = nacl.encrypt(m, n);
             NaCl nacl2 = new NaCl(bobsk, alicepk);
-            byte[] m2 = nacl2.decrypt(c, nonce);
+            byte[] m2 = nacl2.decrypt(c, n);
             assertThat(m2).isEqualTo(m);
         }
     }
@@ -250,26 +251,81 @@ public class BoxTest {
             byte[] bobsk = new byte[crypto_secretbox_SECRETKEYBYTES];
             curve25519xsalsa20poly1305.crypto_box_keypair(alicepk, alicesk);
             curve25519xsalsa20poly1305.crypto_box_keypair(bobpk, bobsk);
-            byte[] nonce = new byte[crypto_secretbox_NONCEBYTES];
-            random.nextBytes(nonce);
+            byte[] n = new byte[crypto_secretbox_NONCEBYTES];
+            randombytes(n, 0, crypto_secretbox_NONCEBYTES);
             byte[] m = new byte[mlen];
-            random.nextBytes(m);
+            randombytes(m, 0, mlen);
 
             NaCl nacl = new NaCl(bobpk, alicesk);
-            byte[] c = nacl.encrypt(m, nonce);
+            byte[] c = nacl.encrypt(m, this.n);
             int caught = 0;
-
             while (caught < 10) {
-                byte[] b = new byte[1];
-                random.nextBytes(b);
-                c[random.nextInt(c.length)] = b[0];
+                c[random.nextInt(c.length)] = random();
                 NaCl nacl2 = new NaCl(alicepk, bobsk);
                 try {
-                    byte[] m2 = nacl2.decrypt(c, nonce);
+                    byte[] m2 = nacl2.decrypt(c, this.n);
                     assertThat(m2).isNotEqualTo(m);
                 } catch (Exception e) {
                     assertThat(e).isInstanceOf(SecurityException.class)
                             .hasMessage("ciphertext fails verification");
+                    caught++;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void test_crypto_cryptobox_7() throws Exception {
+        byte[] alicepk = new byte[crypto_secretbox_PUBLICKEYBYTES];
+        byte[] alicesk = new byte[crypto_secretbox_SECRETKEYBYTES];
+        byte[] bobpk = new byte[crypto_secretbox_PUBLICKEYBYTES];
+        byte[] bobsk = new byte[crypto_secretbox_SECRETKEYBYTES];
+        byte[] n = new byte[crypto_secretbox_NONCEBYTES];
+        byte[] m = new byte[10000];
+        byte[] c = new byte[10000];
+        byte[] m2 = new byte[10000];
+
+        for (int mlen = 0; mlen < 1000 && mlen + crypto_secretbox_ZEROBYTES < m.length; ++mlen) {
+            curve25519xsalsa20poly1305.crypto_box_keypair(alicepk, alicesk);
+            curve25519xsalsa20poly1305.crypto_box_keypair(bobpk, bobsk);
+            randombytes(n, 0, crypto_secretbox_NONCEBYTES);
+            randombytes(m, crypto_secretbox_ZEROBYTES, mlen + crypto_secretbox_ZEROBYTES + mlen);
+            crypto_box(c, m, mlen + crypto_secretbox_ZEROBYTES, n, bobpk, alicesk);
+            if (crypto_box_open(m2, c, mlen + crypto_secretbox_ZEROBYTES, n, alicepk, bobsk) == 0) {
+                for (int i = 0; i < mlen + crypto_secretbox_ZEROBYTES; i++) {
+                    assertThat(m2[i]).isEqualTo(m[i]);
+                }
+            } else {
+                Fail.fail("ciphertext fails verification");
+            }
+        }
+    }
+
+    @Test
+    public void test_crypto_cryptobox_8() throws Exception {
+        byte[] alicepk = new byte[crypto_secretbox_PUBLICKEYBYTES];
+        byte[] alicesk = new byte[crypto_secretbox_SECRETKEYBYTES];
+        byte[] bobpk = new byte[crypto_secretbox_PUBLICKEYBYTES];
+        byte[] bobsk = new byte[crypto_secretbox_SECRETKEYBYTES];
+        byte[] n = new byte[crypto_secretbox_NONCEBYTES];
+        byte[] m = new byte[10000];
+        byte[] c = new byte[10000];
+        byte[] m2 = new byte[10000];
+
+        for (int mlen = 0; mlen < 1000 && mlen + crypto_secretbox_ZEROBYTES < m.length; ++mlen) {
+            curve25519xsalsa20poly1305.crypto_box_keypair(alicepk, alicesk);
+            curve25519xsalsa20poly1305.crypto_box_keypair(bobpk, bobsk);
+            randombytes(n, 0, crypto_secretbox_NONCEBYTES);
+            randombytes(m, crypto_secretbox_ZEROBYTES, mlen + crypto_secretbox_ZEROBYTES + mlen);
+            crypto_box(c, m, mlen + crypto_secretbox_ZEROBYTES, n, bobpk, alicesk);
+            int caught = 0;
+            while (caught < 10) {
+                c[random.nextInt(mlen + crypto_secretbox_ZEROBYTES)] = random();
+                if (crypto_box_open(m2, c, mlen + crypto_secretbox_ZEROBYTES, n, alicepk, bobsk) == 0) {
+                    for (int i = 0; i < mlen + crypto_secretbox_ZEROBYTES; i++) {
+                        assertThat(m2[i]).isEqualTo(m[i]);
+                    }
+                } else {
                     caught++;
                 }
             }
