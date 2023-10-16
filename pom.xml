@@ -39,7 +39,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <manifest-file>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifest-file>
   </properties>
 
   <distributionManagement>
@@ -82,33 +81,24 @@
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
-        <configuration>
-          <archive>
-            <manifestFile>${manifest-file}</manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <groupId>biz.aQute.bnd</groupId>
         <artifactId>bnd-maven-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>6.4.0</version>
+        <extensions>true</extensions>
         <configuration>
-          <manifestPath>${manifest-file}</manifestPath>
           <bnd><![CDATA[
 Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
 Bundle-Version: ${project.version}
 -exportcontents: com.neilalexander.jnacl.crypto;version="${project.version}", com.neilalexander.jnacl;version="${project.version}"
+-jpms-module-info: $[Bundle-SymbolicName];access=0
 ]]>
           </bnd>
         </configuration>
         <executions>
           <execution>
+            <id>default-jar</id>
             <goals>
-              <goal>bnd-process</goal>
+              <goal>jar</goal>
             </goals>
           </execution>
         </executions>
@@ -126,22 +116,12 @@ Bundle-Version: ${project.version}
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <archive>
-            <manifestFile>${manifest-file}</manifestFile>
-          </archive>
-        </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.0.0</version>
-        <configuration>
-          <archive>
-            <manifestFile>${manifest-file}</manifestFile>
-          </archive>
-        </configuration>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -158,9 +138,6 @@ Bundle-Version: ${project.version}
         <version>2.5.3</version>
         <configuration>
           <tagNameFormat>v@{project.version}</tagNameFormat>
-          <archive>
-            <manifestFile>${manifest-file}</manifestFile>
-          </archive>
         </configuration>
       </plugin>
 
